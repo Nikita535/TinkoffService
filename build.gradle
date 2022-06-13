@@ -28,6 +28,8 @@ dependencies {
 
     implementation 'ru.tinkoff.invest:openapi-java-sdk-java8:0.5.1'
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
+
+    implementation('org.springdoc:springdoc-openapi-ui:1.6.9')
 }
 
 tasks.named('test') {

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import ru.tinkoff.invest.openapi.OpenApi;
 import ru.tinkoff.invest.openapi.okhttp.OkHttpOpenApi;
 
+
 @Configuration
 @EnableConfigurationProperties(ApiConfig.class)
 @RequiredArgsConstructor
@@ -14,9 +15,8 @@ public class ApplicationConfig {
     private final ApiConfig apiConfig;
 
     @Bean
-    public OpenApi api(){
+    public OpenApi api() {
         String ssoToken = System.getenv("ssoToken");
-        return new OkHttpOpenApi(ssoToken, apiConfig.getIsSandBoxMode(),);
+        return new OkHttpOpenApi(ssoToken, apiConfig.getIsSandBoxMode());
     }
-
 }
