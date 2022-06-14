@@ -1,8 +1,7 @@
 package com.example.tinkoffservice.Service;
 
 import com.example.tinkoffservice.Exception.StockNotFoundException;
-import com.example.tinkoffservice.dto.StocksDto;
-import com.example.tinkoffservice.dto.TickersDto;
+import com.example.tinkoffservice.dto.*;
 import com.example.tinkoffservice.model.Currency;
 import com.example.tinkoffservice.model.Stock;
 import lombok.RequiredArgsConstructor;
@@ -72,4 +71,26 @@ public class TinkoffStockService implements StockService {
 
         return new StocksDto(stocks);
     }
+
+    @Async
+    public CompletableFuture<Optional<Orderbook>> getOrderBookByFigi(String figi){
+        var orderBook = api.getMarketContext().getMarketOrderbook(figi,0);
+        return orderBook;
+    }
+
+    public StockPricesDto getPrices(FigiesDto figiesDto){
+       List<CompletableFuture<Optional<Orderbook>>> orderBooks =new ArrayList<>();
+       figiesDto.getFigies().forEach(figi -> orderBooks.add(getOrderBookByFigi(figi)));
+
+       var listPrices = orderBooks.stream().map(CompletableFuture::join).
+               map(ob ->ob.orElseThrow(() -> new StockNotFoundException("Stock not found")))
+               .map(orderbook -> new StockPrice(
+                       orderbook.getFigi(),
+                       orderbook.getLastPrice().doubleValue()
+               )).collect(Collectors.toList());
+       return new StockPricesDto(listPrices);
+
+    }
+
+
 }
